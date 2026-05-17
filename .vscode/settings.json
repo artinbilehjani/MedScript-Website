@@ -4,5 +4,6 @@
         "PYTHONUNBUFFERED",
         "runserver",
         "setuptools"
-    ]
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:system"
 }
