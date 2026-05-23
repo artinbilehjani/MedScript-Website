@@ -18,8 +18,8 @@ class Post(models.Model):
     title = models.CharField(max_length=250)
     content = models.TextField()
     status = models.BooleanField(default=False)
-    category = models.ManyToManyField("Category", on_delete=models.SET_NULL, null=True)
-    tag = models.ManyToManyField("Tag", on_delete=models.SET_NULL, null=True)
+    category = models.ManyToManyField("Category", null=True)
+    tag = models.ManyToManyField("Tag", null=True)
     #view_count
     #comment_count
     

@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 #for get absolute urls
 from django.urls import reverse
 from .posts import Post
-#for taggit
-from taggit.managers import TaggableManager
+# #for taggit
+# from taggit.managers import TaggableManager
 
 # Create your models here.
 
