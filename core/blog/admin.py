@@ -1,5 +1,5 @@
 from django.contrib import admin
-from blog.models import Post,Category,Tag,Comment
+from blog.models import Post,Category,Tag,Comment,PostFile
 # Register your models here.
 
 class PostAdmin(admin.ModelAdmin):
@@ -7,7 +7,6 @@ class PostAdmin(admin.ModelAdmin):
         "author",
         "title",
         "status",
-        "category",
         "created_date",
         "published_date",
     ]
@@ -19,21 +18,18 @@ class PostAdmin(admin.ModelAdmin):
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = [
-        "name",
+        "display_name",
         "approved",
         "created_date",
     ]
 
     list_filter = ("approved",)
 
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name",)
 
-class TagAdmin(admin.ModelAdmin):
-    list_display = ("name",)
 
 
 admin.site.register(Post,PostAdmin)
-admin.site.register(Comment,CategoryAdmin)
-admin.site.register(Category,CategoryAdmin)
-admin.site.register(Tag,TagAdmin)
+admin.site.register(Comment,CommentAdmin)
+admin.site.register(Category)
+admin.site.register(Tag)
+admin.site.register(PostFile)

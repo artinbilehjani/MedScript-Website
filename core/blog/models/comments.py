@@ -1,27 +1,33 @@
 from django.db import models
-from django.contrib.auth.models import User
-
-#for get absolute urls
-from django.urls import reverse
-from .posts import Post
-# #for taggit
-# from taggit.managers import TaggableManager
 
 # Create your models here.
 
 class Comment(models.Model):
-    post = models.ForeignKey("Post", on_delete=models.CASCADE) 
-    name = models.CharField(max_length=255)
-    subject = models.CharField(max_length=255)
-    message = models.TextField()
+    """class for comments of each post"""
+    post = models.ForeignKey("blog.Post", on_delete=models.CASCADE) 
+    display_name = models.CharField(max_length=50)
+    message = models.TextField(max_length=255)
     approved = models.BooleanField(default=False)
-    like_count = models.IntegerField(default=0) 
-    dislike_count = models.IntegerField(default=0) 
     created_date = models.DateTimeField(auto_now_add=True)
 
 
     class Meta:
-        ordering = ['created_date','like_count']
+        ordering = ['created_date']
 
     def __str__(self):
-        return self.name
+        return self.display_name
+
+    def get_snippets(self):
+        words = self.message.split()
+        snippet = " ".join(words[:5])
+        if len(words) > 5:
+            snippet += "..."
+        return snippet
+    
+    @property
+    def like_count(self):
+        return self.votes.filter(vote_type='like').count()
+    
+    @property
+    def dislike_count(self):
+        return self.votes.filter(vote_type='dislike').count()

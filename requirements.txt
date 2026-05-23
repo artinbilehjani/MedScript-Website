@@ -9,6 +9,7 @@ markdown
 django-filter
 drf-yasg[validation]
 djoser
+django-hitcount
 
 # deployment modules
 djangorestframework-simplejwt

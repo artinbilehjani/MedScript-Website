@@ -1,9 +1,12 @@
 {
     "cSpell.words": [
+        "hitcount",
+        "medscript",
         "PYTHONDONTWRITEBYTECODE",
         "PYTHONUNBUFFERED",
         "runserver",
-        "setuptools"
+        "setuptools",
+        "viewsets"
     ],
     "python-envs.defaultEnvManager": "ms-python.python:system"
 }

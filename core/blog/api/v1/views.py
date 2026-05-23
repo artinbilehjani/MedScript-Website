@@ -29,6 +29,7 @@ class PostModelViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = {
         "category": ["exact", "in"],
+        "tag": ["exact","in"],
         "author": ["exact"],
         "status": ["exact"],
     }

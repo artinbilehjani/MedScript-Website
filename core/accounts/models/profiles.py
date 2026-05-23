@@ -5,12 +5,11 @@ from django.dispatch import receiver
 from .users import User
 
 class Profile(models.Model):
-    user = models.ForeignKey("User", on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=250)
-    last_name = models.CharField(max_length=250)
-    image = models.ImageField(null=True, blank=True)
-    description = models.TextField()
-
+    user = models.ForeignKey("accounts.User", on_delete=models.CASCADE)
+    display_name = models.CharField(max_length=50,default="medscript")
+    image = models.ImageField(upload_to='images/profile_pictures/', default='images/default_images/blank_profile_picture.png')
+    description = models.TextField(null=True,blank=True)
+    post_count = models.PositiveIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
@@ -22,3 +21,4 @@ class Profile(models.Model):
 def save_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+
