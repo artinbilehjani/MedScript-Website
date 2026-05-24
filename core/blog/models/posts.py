@@ -22,7 +22,7 @@ class Post(models.Model):
     category = models.ManyToManyField("Category",)
     tag = models.ManyToManyField("Tag",)
     links = models.TextField(null=True,blank=True)
-    hit_count_generic = GenericRelation(HitCount, object_id_field='object_p',
+    hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk',
  related_query_name='hit_count_generic_relation')
 
     created_date = models.DateTimeField(auto_now_add=True)
@@ -36,11 +36,24 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    def _generate_unique_slug(self):
+        base_slug = slugify(self.title, allow_unicode=True) or "post"
+        max_length = self._meta.get_field("slug").max_length
+
+        base_slug = base_slug[:max_length]
+        slug = base_slug
+        counter = 1
+
+        while Post.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            suffix = f"-{counter}"
+            trimmed_base = base_slug[: max_length - len(suffix)]
+            slug = f"{trimmed_base}{suffix}"
+            counter += 1
+
+        return slug
+
     def save(self, *args, **kwargs):
-        super(Post, self).save(*args, **kwargs)
-    
-        value = self.title
-        self.slug = slugify(value, allow_unicode=True)
+        self.slug = self._generate_unique_slug()
         super().save(*args, **kwargs)
 
     def get_snippets(self):

@@ -1,12 +1,22 @@
 {
     "cSpell.words": [
+        "authtoken",
+        "djoser",
+        "filterset",
         "hitcount",
         "medscript",
+        "paginations",
+        "pycache",
+        "pytest",
         "PYTHONDONTWRITEBYTECODE",
         "PYTHONUNBUFFERED",
         "runserver",
         "setuptools",
-        "viewsets"
+        "simplejwt",
+        "venv",
+        "viewset",
+        "viewsets",
+        "yasg"
     ],
     "python-envs.defaultEnvManager": "ms-python.python:system"
 }

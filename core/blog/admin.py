@@ -2,7 +2,14 @@ from django.contrib import admin
 from blog.models import Post,Category,Tag,Comment,PostFile
 # Register your models here.
 
+
+class PostFileInline(admin.TabularInline):
+    model = PostFile
+
 class PostAdmin(admin.ModelAdmin):
+    inlines = [
+        PostFileInline,
+    ]
     list_display = [
         "author",
         "title",
@@ -24,7 +31,6 @@ class CommentAdmin(admin.ModelAdmin):
     ]
 
     list_filter = ("approved",)
-
 
 
 

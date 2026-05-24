@@ -9,19 +9,17 @@ from rest_framework.permissions import (
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from .serializers import PostSerializer, CategorySerializer
-from .permissions import CustomTripleAccessPermission
-from ...models import Post, Category
-from .paginations import DefaultPagination
+from ..serializers import PostSerializer, CategorySerializer
+from ..permissions import CustomTripleAccessPermission
+from ....models import Post, Category
+from ..paginations import DefaultPagination
 
 
 from django_filters.rest_framework import DjangoFilterBackend
+from hitcount.views import HitCountDetailView
+from django.shortcuts import redirect
 
-
-
-
-# Example for ModelViewSet in CBV
-class PostModelViewSet(viewsets.ModelViewSet):
+class ManagementModelViewSet(viewsets.ModelViewSet):
     # lookup_field = id
     permission_classes = [IsAuthenticatedOrReadOnly, CustomTripleAccessPermission]
     serializer_class = PostSerializer
@@ -48,12 +46,9 @@ class PostModelViewSet(viewsets.ModelViewSet):
     @action(methods=["get"], detail=False)
     def get_ok(self, request):
         return Response({"detail": "ok"}, status=status.HTTP_200_OK)
-
+    
 
 class CategoryModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
-
-
-
