@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from .users import User
 
 class Profile(models.Model):
-    user = models.ForeignKey("accounts.User", on_delete=models.CASCADE)
+    user = models.OneToOneField("accounts.User", on_delete=models.CASCADE, related_name="profile")
     display_name = models.CharField(max_length=50,default="medscript")
     image = models.ImageField(upload_to='images/profile_pictures/', default='images/default_images/blank_profile_picture.png')
     description = models.TextField(null=True,blank=True)

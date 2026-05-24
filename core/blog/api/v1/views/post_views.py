@@ -19,7 +19,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from hitcount.views import HitCountDetailView
 from hitcount.models import HitCount
 from django.shortcuts import redirect
-
+from rest_framework.parsers import JSONParser,FormParser,MultiPartParser
 
 # Example for ModelViewSet in CBV
 
@@ -38,14 +38,7 @@ class PostModelViewSet(viewsets.ModelViewSet,HitCountDetailView):
     search_fields = ["title", "content"]
     ordering_fields = ["published_date"]
     pagination_class = DefaultPagination
-
-    def get_serializer_context(self):
-        """
-        Pass the request to the serializer context.
-        """
-        context = super().get_serializer_context()
-        context.update({"request": self.request})
-        return context
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -57,15 +50,8 @@ class PostModelViewSet(viewsets.ModelViewSet,HitCountDetailView):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        profile = self.request.user.profile
-        serializer.save(author=profile)
+        serializer.save(author=self.request.user.profile)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     @action(methods=["get"], detail=False)
     def get_ok(self, request):

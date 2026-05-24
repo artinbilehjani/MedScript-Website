@@ -1,8 +1,12 @@
 from rest_framework import serializers
-from ...models import Post, Category,Tag
+from ...models import Post, Category,Tag,PostFile
 from accounts.models import Profile
 from rest_framework.parsers import JSONParser
 
+class PostFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostFile
+        fields = ["id", "file"]
 
 class CategorySerializer(serializers.ModelSerializer):
 
@@ -22,6 +26,12 @@ class PostSerializer(serializers.ModelSerializer):
     relative_url = serializers.URLField(source="get_absolute_api_url", read_only=True)
     absolute_url = serializers.SerializerMethodField(method_name="get_absolute_url")
     hit_count = serializers.SerializerMethodField(method_name="get_hit_count")
+    files = PostFileSerializer(many=True, read_only=True)
+    uploaded_files = serializers.ListField(
+        child=serializers.FileField(),
+        write_only=True,
+        required=False
+    )
 
     class Meta:
         model = Post
@@ -42,6 +52,8 @@ class PostSerializer(serializers.ModelSerializer):
             "category",
             "tag",
             "hit_count",
+            "files",
+            "uploaded_files",
         ]
         read_only_fields = ["author"]
 
@@ -77,13 +89,43 @@ class PostSerializer(serializers.ModelSerializer):
         return rep
 
     def create(self, validated_data):
+        uploaded_files = validated_data.pop("uploaded_files", [])
+        categories = validated_data.pop("category", [])
+        tags = validated_data.pop("tag", [])
+
         validated_data["author"] = Profile.objects.get(
-            user__id=self.context.get("request").user.id
+            user=self.context["request"].user
         )
-        return super().create(validated_data)
+
+        post = Post.objects.create(**validated_data)
+        post.category.set(categories)
+        post.tag.set(tags)
+
+        for file in uploaded_files:
+            PostFile.objects.create(post=post, file=file)
+
+        return post
 
     def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
+        uploaded_files = validated_data.pop("uploaded_files", None)
+        categories = validated_data.pop("category", None)
+        tags = validated_data.pop("tag", None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        if categories is not None:
+            instance.category.set(categories)
+
+        if tags is not None:
+            instance.tag.set(tags)
+
+        if uploaded_files:
+            for file in uploaded_files:
+                PostFile.objects.create(post=instance, file=file)
+
+        return instance
     
     def get_hit_count(self, obj):
         hit_count_obj = obj.hit_count_generic.all().first()

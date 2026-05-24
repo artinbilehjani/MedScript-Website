@@ -81,26 +81,17 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
     
+
+
+def post_file_upload_path(instance, filename):
+    post_id = instance.post_id or "unknown"
+    return f"files/{post_id}/{filename}"
+
+
 class PostFile(models.Model):
-    file = models.FileField(upload_to="files/", blank=True, null=True) # Initial upload_to, will be overridden
-    post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name='files')
+    file = models.FileField(upload_to=post_file_upload_path, blank=True, null=True)
+    post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="files")
 
-    def save(self, *args, **kwargs):
-        # Check if the instance is being created for the first time
-        if self.pk is None:
-            # Save the instance first to get the post.id if it's newly created
-            super().save(*args, **kwargs)
-
-            # Construct the new upload path using post.id
-            # Ensure post and post.id are not None
-            if self.post and self.post.id:
-                new_upload_path = f"files/{self.post.id}/"
-                self.file.upload_to = new_upload_path
-                super().save(*args, **kwargs) # Save again with the updated upload_to path
-            else:
-                # Handle cases where post or post.id might be missing, though FK should prevent this
-                super().save(*args, **kwargs)
-        else:
-            # If not being created, just save normally
-            super().save(*args, **kwargs)
+    def __str__(self):
+        return self.file.name if self.file else f"File for post {self.post_id}"
 

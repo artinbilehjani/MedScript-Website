@@ -24,13 +24,14 @@ class PostAdmin(admin.ModelAdmin):
     ]
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = [
-        "display_name",
-        "approved",
-        "created_date",
-    ]
+    list_display = ('commenter_name', 'post', 'is_approved', 'created_date')
+    list_filter = ('is_approved', 'created_date')
+    search_fields = ('user__username', 'content', 'post__title')
 
-    list_filter = ("approved",)
+    def commenter_name(self, obj):
+        return obj.user.profile.display_name if hasattr(obj.user, 'profile') else obj.user.username
+
+    commenter_name.short_description = 'کاربر'
 
 
 

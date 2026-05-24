@@ -19,9 +19,10 @@ class UserManager(BaseUserManager):
     def create_user(self, username, password, **extra_fields):
         if not username:
             raise ValueError(_('Error: The User you want to create must have an username, try again'))
+        username = self.model.normalize_username(username)
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
 
     def create_superuser(self, username, password, **extra_fields):
