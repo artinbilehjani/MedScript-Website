@@ -5,6 +5,7 @@ from django.utils.text import slugify
 from hitcount.models import HitCount,HitCountMixin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -68,11 +69,45 @@ class Post(models.Model):
 
 
 class Category(models.Model):
-    """class for category query"""
-    name = models.CharField(max_length=50)
+    """Three-layer Category Hierarchy"""
+    MAX_DEPTH = 3
+
+    name = models.CharField(max_length=255)
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="children"
+    )
 
     def __str__(self):
         return self.name
+
+    def get_depth(self):
+        depth = 1
+        node = self.parent
+        while node:
+            depth += 1
+            node = node.parent
+        return depth
+
+    def clean(self):
+        if self.parent == self:
+            raise ValidationError("A category cannot be its own parent.")
+
+        ancestor = self.parent
+        while ancestor:
+            if ancestor == self:
+                raise ValidationError("Circular hierarchy is not allowed.")
+            ancestor = ancestor.parent
+
+        if self.get_depth() > self.MAX_DEPTH:
+            raise ValidationError(f"Only {self.MAX_DEPTH} levels are allowed.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
     
 class Tag(models.Model):
     """class for tag query"""

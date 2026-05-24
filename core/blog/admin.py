@@ -35,8 +35,37 @@ class CommentAdmin(admin.ModelAdmin):
 
 
 
+class CategoryInline(admin.TabularInline):
+    model = Category
+    fk_name = "parent"
+    fields = ("name",)
+    extra = 1
+    show_change_link = True
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "parent", "depth")
+    inlines = [CategoryInline]
+
+    def depth(self, obj):
+        level = 1
+        current = obj.parent
+        while current:
+            level += 1
+            current = current.parent
+        return level
+
+    depth.short_description = "Level"
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "parent":
+            qs = Category.objects.all()
+            qs = qs.exclude(parent__parent__isnull=False)
+            kwargs["queryset"] = qs
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
 admin.site.register(Post,PostAdmin)
 admin.site.register(Comment,CommentAdmin)
-admin.site.register(Category)
+admin.site.register(Category,CategoryAdmin)
 admin.site.register(Tag)
 admin.site.register(PostFile)
