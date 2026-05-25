@@ -52,10 +52,29 @@ class PostModelViewSet(viewsets.ModelViewSet,HitCountDetailView):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user.profile)
 
-    
-    @action(methods=["get"], detail=False)
-    def get_ok(self, request):
-        return Response({"detail": "ok"}, status=status.HTTP_200_OK)
+    # @action(methods=["get", "post"], detail=True, url_path="comments")
+    # def comments(self, request, pk=None):
+    #     post = self.get_object()
+
+    #     if request.method == "GET":
+    #         comments = post.comments.filter(parent__isnull=True).order_by("-created_at")
+    #         serializer = CommentSerializer(comments, many=True, context={"request": request})
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    #     if not request.user.is_authenticated:
+    #         return Response(
+    #             {"detail": "برای ثبت نظر باید وارد شوید."},
+    #             status=status.HTTP_401_UNAUTHORIZED
+    #         )
+
+    #     serializer = CommentSerializer(data=request.data, context={"request": request})
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save(
+    #         post=post,
+    #         user=request.user
+    #     )
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     
     
 class CategoryModelViewSet(viewsets.ModelViewSet):

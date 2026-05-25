@@ -23,3 +23,8 @@ Faker
 
 # email backend
 django-mail-templated
+
+# pre add
+asgiref
+sqlparse
+tzdata
