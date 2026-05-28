@@ -16,18 +16,27 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 
 # Create your views here.
 
+from django.shortcuts import render
+
+def index_view(request):
+    return render(request, 'blog/archive-page.html') # Assuming index.html is in blog/templates/blog/
+
+
+
 # def indexViewF(request):
 #     return render(request, "index.html")
 
 
-class indexView(TemplateView):
-    template_name = "index.html"
+# class indexView(TemplateView):
+#     template_name = "index.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["name"] = "ali"
-        context["posts"] = Post.objects.all()
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context["name"] = "ali"
+#         context["posts"] = Post.objects.all()
+#         return context
+
+
 
 
 """ FBV for redirect

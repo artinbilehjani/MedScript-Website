@@ -1,17 +1,36 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archive</title>
-    <link rel="stylesheet" href="../../statics/css/templatemo-prism-flux.css">
-    <link rel="stylesheet" href="../../statics/css/templatemo-glossy-touch.css">
+    {% comment %} <link rel="stylesheet" href="{% static 'css/templatemo-prism-flux.css' %}"> {% endcomment %}
+    {% comment %} <link rel="stylesheet" href="{% static 'css/templatemo-glossy-touch.css' %}"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'css/mycss.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="../../statics/css/templatemo-neural-style.css" rel="stylesheet">
+    {% comment %} <link href="{% static 'css/templatemo-neural-style.css' %}" rel="stylesheet"> {% endcomment %}
 </head>
 <body>
+<!-- Epic Neural Background -->
+    <div class="neural-background"></div>
+    
+    <!-- Floating Geometric Shapes -->
+    <div class="geometric-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <!-- Neural Network Lines -->
+    <div class="neural-lines">
+        <div class="neural-line"></div>
+        <div class="neural-line"></div>
+        <div class="neural-line"></div>
+    </div>
     <!-- Enhanced Skills Section - Technical Arsenal -->
     <section class="skills-section" id="skills">
         <div class="skills-container">
@@ -20,12 +39,10 @@
                 <p class="section-subtitle">Mastery of cutting-edge technologies and frameworks</p>
             </div>
             
-            <div class="skill-categories">
+            <div class="skill-categories" id="gridds">
                 <div class="category-tab active" data-category="all">All Skills</div>
-                <div class="category-tab" data-category="frontend">Frontend</div>
-                <div class="category-tab" data-category="backend">Backend</div>
-                <div class="category-tab" data-category="cloud">Cloud & DevOps</div>
-                <div class="category-tab" data-category="emerging">Emerging Tech</div>
+                {# Posts will be loaded here by JavaScript #}
+                
             </div>
 
             <div class="skills-hexagon-grid" id="skillsGrid">
@@ -33,8 +50,45 @@
             </div>
         </div>
     </section>
-    <script src="../../statics/js/templatemo-neural-scripts.js"></script>
-    <script src="../../statics/js/templatemo-prism-scripts.js"></script>
-    <script src="../../statics/js/templatemo-glossy-touch.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const apiUrl = 'http://127.0.0.1:8000/blog/api/v1/post/'; // Your DRF API URL
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const postContainer = document.getElementById('gridds');
+                    if (data.results && data.results.length > 0) { // Assuming DRF default pagination
+                        data.results.forEach(post => {
+                            const postElement = document.createElement('div');
+                            postElement.style.marginBottom = '20px'; // Basic styling
+                            postElement.innerHTML = `
+                                <div class="category-tab" data-category="frontend" >
+                                    <h2>${post.title}</h2>
+                                    <p>By: ${post.author || 'Anonymous'}</p> {# Adjust if author is not a direct field, or if profile has username #}
+                                    <p>${post.snippet}</p>
+                                    <p>Published: ${new Date(post.published_date).toLocaleDateString()}</p>
+                                </div>
+                            `;
+                            postContainer.appendChild(postElement);
+                        });
+                    } else {
+                        postContainer.innerHTML = '<p>No posts found.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching posts:', error);
+                    document.getElementById('post-container').innerHTML = '<p>Could not load posts. Please try again later.</p>';
+                });
+        });
+    </script>
+    <script src="{% static 'js/templatemo-neural-scripts.js' %}"></script>
+    <script src="{% static 'js/templatemo-prism-scripts.js' %}"></script>
+    <script src="{% static 'js/templatemo-glossy-touch.js' %}"></script>
 </body>
 </html>

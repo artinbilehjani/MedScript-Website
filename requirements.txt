@@ -28,3 +28,6 @@ django-mail-templated
 asgiref
 sqlparse
 tzdata
+
+# frontend
+django-cors-headers 

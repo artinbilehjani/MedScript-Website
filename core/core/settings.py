@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # "mail_templated",
     "djoser",
     'hitcount',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+ # Make sure this is after CorsMiddleware
 ]
 
 ROOT_URLCONF = 'core.urls'

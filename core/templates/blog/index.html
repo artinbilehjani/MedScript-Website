@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medscript Posts</title>
+</head>
+<body>
+    <h1>Latest Posts</h1>
+    <div id="post-container">
+        {# Posts will be loaded here by JavaScript #}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const apiUrl = 'http://127.0.0.1:8000/blog/api/v1/post/'; // Your DRF API URL
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const postContainer = document.getElementById('post-container');
+                    if (data.results && data.results.length > 0) { // Assuming DRF default pagination
+                        data.results.forEach(post => {
+                            const postElement = document.createElement('div');
+                            postElement.style.marginBottom = '20px'; // Basic styling
+                            postElement.innerHTML = `
+                                <h2>${post.title}</h2>
+                                <p>By: ${post.author || 'Anonymous'}</p> {# Adjust if author is not a direct field, or if profile has username #}
+                                <p>${post.snippet}</p>
+                                <p>Published: ${new Date(post.published_date).toLocaleDateString()}</p>
+                            `;
+                            postContainer.appendChild(postElement);
+                        });
+                    } else {
+                        postContainer.innerHTML = '<p>No posts found.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching posts:', error);
+                    document.getElementById('post-container').innerHTML = '<p>Could not load posts. Please try again later.</p>';
+                });
+        });
+    </script>
+</body>
+</html>

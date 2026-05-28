@@ -8,11 +8,18 @@ class PostFileSerializer(serializers.ModelSerializer):
         model = PostFile
         fields = ["id", "file"]
 
-class CategorySerializer(serializers.ModelSerializer):
+# serializers.py
+
+class RecursiveCategorySerializer(serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
-        fields = ["name", "id"]
+        fields = ["id", "name", "children"]
+
+    def get_children(self, obj):
+        children = obj.children.all()
+        return RecursiveCategorySerializer(children, many=True).data
 
 class TagSerializer(serializers.ModelSerializer):
 
@@ -32,6 +39,7 @@ class PostSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False
     )
+    author = serializers.CharField(source='author.display_name', read_only=True)
 
     class Meta:
         model = Post
@@ -76,7 +84,7 @@ class PostSerializer(serializers.ModelSerializer):
         else:
             rep.pop("content", None)
 
-        rep["category"] = CategorySerializer(
+        rep["category"] = RecursiveCategorySerializer(
             instance.category.all(),
             context={"request": request},
             many=True,

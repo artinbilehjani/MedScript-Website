@@ -9,7 +9,7 @@ from rest_framework.permissions import (
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from ..serializers import PostSerializer, CategorySerializer
+from ..serializers import PostSerializer, RecursiveCategorySerializer
 from ..permissions import CustomTripleAccessPermission
 from ....models import Post, Category
 from ..paginations import DefaultPagination
@@ -79,5 +79,5 @@ class PostModelViewSet(viewsets.ModelViewSet,HitCountDetailView):
     
 class CategoryModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
-    serializer_class = CategorySerializer
+    serializer_class = RecursiveCategorySerializer
     queryset = Category.objects.all()
